@@ -1,0 +1,6 @@
+{
+    "airflow_dir": "mnt/c/users/yourname/airflowhome",
+    "bucket_name": "esg-analytics",
+    "project_path": "/mnt/c/users/[yourname]/[yourprojectname]",
+    "region": "us-west-2"
+}
