@@ -8,7 +8,6 @@ vars.JSON
 # folders
 archive/
 references/
-reports/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
