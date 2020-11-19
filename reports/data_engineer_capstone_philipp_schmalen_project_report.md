@@ -1,7 +1,23 @@
++++
+title = "Airflow, Spark and AWS EMR Alternative indicators for firms' sustainability and ESG ratings"
+description = ""
+tags = ["Spark", 
+		"EMR", 
+		"Airflow", 
+		"Google Trends",
+		"Yahoo! Finance", 
+		"ETL"]
+category = ["post"]
+draft = false
+date = 2020-11-17
++++
+
 # Alternative indicators for firms' sustainability and ESG ratings
 #### *Capstone project for the data engineer nanodegree at Udacity*
 
 The project centers around a fictitious firm called Green Quant that provides data about a firm's sustainability profile. It combines both worlds from alternative indicators such as historical search interest from Google Trends and classical financial metrics taken from Yahoo! Finance. This showcases my skills in applying a broad range of tools like Apache Airflow, AWS EMR and Apache Spark.
+
+> Please refer to the Github repository here: https://github.com/philippschmalen/etl_spark_airflow_emr  
 
 ## Problem: Measure firm sustainability
 
@@ -57,13 +73,13 @@ We consider the following options to implement a data lake on AWS:
 The schema below provide an overview of technical components  and AWS solutions. 
 
 **Option 1**: AWS EMR with HDFS and Spark
-![](./images/option1_hdfs_spark_emr.PNG)
+![](/figures/spark_emr_airflow/option1_hdfs_spark_emr.png)
 
 **Option 2**: AWS EMR with S3 and Spark 
-![](./images/option2_s3_spark_emr.PNG)
+![](/figures/spark_emr_airflow/option2_s3_spark_emr.png)
 
 **Option 3**: AWS 
-![](./images/option3_athena.PNG)
+![](/figures/spark_emr_airflow/option3_athena.png)
 
 We opt for **Option 2** since it combines the simplicity of S3 as a storage platform with the big data processing power of Spark EMR cluster. Moreover, I benefit from the learning experience when implementing a Spark ETL job on EMR clusters. 
 
@@ -132,28 +148,121 @@ The number prefix from indicates what stages the data is in. `0[...]` sets the f
 ## Airflow DAG
 
 I implemented a DAG (`./src/airflow/dags/esg_dag.py`) that uploads raw data and a PySpark script to S3, launches an EMR cluster and runs a Spark step which calls the PySpark script as a Spark step. Lastly, the processed data loads back to S3, where it can be accessed for further analysis.
-![](./images/spark_submit_design.PNG)
+![](/figures/spark_emr_airflow/spark_submit_design.PNG)
 
 DAG Graph view of the tasks and dependencies:
-![](./images/dag_graph_view.PNG)
+![](/figures/spark_emr_airflow/dag_graph_view.PNG)
 
-Running the DAG takes around 17 minutes in total as indicated by the Gantt chart. 
-![](./images/dag_gantt.PNG)
+Running the DAG takes around 17 minutes in total as indicated by the gantt chart. 
+![](/figures/spark_emr_airflow/dag_gantt.PNG)
 
 
 ### Entity relationship diagram (ERD)
 
 The whole ETL results in the following relationship:
 
-![](./images/erd.PNG)
+![](/figures/spark_emr_airflow/erd.PNG)
 
 **Putting it all together into one dataset for analysis** 
 
 To merge all data to a single analysis dataset, requires some aggregations since we want one row for each firm. First, *gtrends* needs to be collapsed on the keyword level by taking the average, maximum or median search interest to remove the time dimension. Next, merge *gtrends* with *gtrends_meta* and reshape the dataframe to a wide format with one firm for each row. Second, *yahoofinance* needs to be reshaped into wide format to also get one row for each firm. Lastly, every 
 
-*Note:* I only outline this roadmap towards data analysis in favor of focusing on Airflow and Spark. 
+*Note:* I only outline this road map towards data analysis in favor of focusing on Airflow and Spark. 
+
+### Data dictionary
+
+| Dataset      | Variable                | Type    | Description                                                                  | Example                 |
+|--------------|-------------------------|---------|------------------------------------------------------------------------------|-------------------------|
+| gtrends      | keyword                 | varchar | a combination of firm name without legal prefix or suffix and an ESG   topic | 3M CO2                  |
+|              | date                    | date    |                                                                              | 10/11/2020              |
+|              | search_interest         | int     | normalized search volume for a specific point   in time                      | 42                      |
+| gtrends_meta | keyword                 | varchar | a combination of firm name without legal prefix or suffix and an ESG   topic | 3M CO2                  |
+|              | topic                   | varchar | ESG topic                                                                    | CO2                     |
+|              | positive                | int     | whether an ESG topic classifies as positive or negative, e.g. scandal   (=0) | 1                       |
+|              | date_define_topic       | date    | timestamp when the ESG topic has been defined                                | 10/11/2020              |
+|              | ticker                  | varchar | acronym at the stock exchange for a publicly listed firm                     | GOOG                    |
+|              | firm_name_raw           | varchar | unprocessed firm name with legal suffixes                                    | Alphabet Inc. (Class A) |
+|              | sector                  | varchar | classification according GCIS                                                | Health Care             |
+|              | firm_name_processed     | varchar | processed firm name without legal suffixes                                   | Alphabet                |
+|              | date_get_firmname       | date    | timestamp when the firm name was retrieved                                   | 10/11/2020              |
+|              | date_construct_keyword  | date    | timestamp when the keyword was constructed                                   | 10/11/2020              |
+|              | date_query_googletrends | date    | timestamp when the query started                                             | 10/11/2020              |
+| yahoofinance | ticker                  | varchar | acronym at the stock exchange for a publicly listed firm                     | GOOG                    |
+|              | date_financial          | date    | timestamp of financial statements reports                                    | 10/11/2020              |
+|              | financial_interval      | varchar | specifies time between financial reports in months                           | 12M                     |
+|              | financial_var           | varchar | financial variable name                                                      | CashAndCashEquivalents  |
+|              | financial_val           | BIGINT  | financial variable value                                                     | 39924000000             |
 
 
+## Testing and data quality checks with Great Expectations
+
+I rely on [Great Expectations](https://docs.greatexpectations.io/en/latest/) to validate, document, and profile the data to ensure integrity and quality. 
+
+**Validate data against checkpoints**
+
+Checkpoints make it easy to "validate data X against expectation Y" and match data batches with Expectation Suites for this. I created checkpoints for the three suites *esg, esg_processed and esg_processed_meta* which are located in `./great_expectations/expectations/`. To run these checkpoints and see whether the data meets the criteria, open a cmd window and type in the following (assuming you have great expectations installed):
+
+
+```bash 
+# navigate to the project dir
+cd ./<project_path>
+# validate preprocessed data
+great_expectations checkpoint run preprocess.chk
+# validate processed data on S3
+great_expectations checkpoint run processed.chk
+# validate processed metadata on S3
+great_expectations checkpoint run processed_meta.chk
+```
+As an example, the expected output for the preprocessed data on the local directory looks like,
+
+![](/figures/spark_emr_airflow/ge_checkpoint_success.PNG)
+
+whereas the processed metadata from S3 gives the following result:
+![](/figures/spark_emr_airflow/ge_checkpoint_success_meta.PNG)
+
+
+### Check expected vs. actual response of an API in PySpark
+A central part of the ETL is to source data from APIs. The scripts send API requests to get some response. A response can either be successful, returning desired data or unsuccessful raising an error or returning empty data frames. A simple approach looks at a given request and compares expected responses with actual responses. In other words, I obtain the difference between the two sets of actual and expected output.  
+
+I implemented the `data_inspection()` function as part of the script `./src/data/3etl_spark_gtrends.py` which compares the input to the output data and returns the set difference between actual and expected API output. An Airflow task uploads the script to S3 and launches a Spark EMR cluster which executes it. I define the `set_difference_keywords` with `spark.sql` and store it in the S3 bucket `/processed/gtrends_missing/`. Below is an excerpt from the function.
+
+
+```python
+
+def data_inspection(df, df_meta, spark):
+    """Inspect and validate API output (df) against API input (df_meta)
+        Return: Set difference of keywords between output and input
+    """
+    print("\nDATA INSPECTION\n"+'-'*40)
+    
+    # create temporary view for SQL
+    df.createOrReplaceTempView("df")
+    df_meta.createOrReplaceTempView("meta")
+
+    # count distinct keywords, dates and 
+    kw_count = spark.sql("""
+        SELECT COUNT(DISTINCT keyword), COUNT(DISTINCT date)
+        FROM df
+        """).collect()
+
+    distinct_kw_date = [i for i in kw_count[0]]
+    print("\tDISTINCT \nkeywords \tdates \t=dates*keywords")
+    print("-"*40)
+    print("{}\t\t {}\t {}".format(distinct_kw_date[0], distinct_kw_date[1], distinct_kw_date[0]*distinct_kw_date[1]))
+    print("-"*40)
+ 
+    # get set difference of meta (input)/df (output)
+    set_difference_keywords = spark.sql("""
+        SELECT DISTINCT in.keyword
+        FROM meta AS in
+        WHERE in.keyword NOT IN (
+            SELECT DISTINCT out.keyword 
+            FROM df AS out)
+    """)
+
+    return set_difference_keywords
+
+```
 
 
 
@@ -173,7 +282,7 @@ S3 limits range from 5 terabyte as a whole to 5GB per single object. If object s
 
 With collected data at its place, it would be no problem to run the ETL and Spark job in the morning. However, the data updates only weekly, as discussed under subsection *Update frequency*. Thus, it would not be sensible to launch an EMR cluster just by a fix schedule. In contrast to this, a viable approach would be to create a script that checks, whether raw data has been updated on S3 and triggers the subsequent ETL. Launching the cluster and executing Spark steps takes around 12 minutes, as shown here:
 
-![](images/emr_elapsed_time.PNG)
+![](/figures/spark_emr_airflow/emr_elapsed_time.PNG)
 
 ** What if the database needed to be accessed by 100+ people?**
 

@@ -1,0 +1,194 @@
+{
+  "data_asset_type": "Dataset",
+  "expectation_suite_name": "esg_processed_meta",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_column_count_to_equal",
+      "kwargs": {
+        "value": 11
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "kwargs": {
+        "column_list": [
+          "topic",
+          "positive",
+          "date_define_topic",
+          "ticker",
+          "firm_name_raw",
+          "sector",
+          "firm_name_processed",
+          "date_get_firmname",
+          "keyword",
+          "date_construct_keyword",
+          "date_query_googletrends"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "topic"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "positive"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_distinct_values_to_be_in_set",
+      "kwargs": {
+        "column": "positive",
+        "value_set": [
+          0,
+          1
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "ticker"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "firm_name_raw"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "sector"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_distinct_values_to_be_in_set",
+      "kwargs": {
+        "column": "sector",
+        "value_set": [
+          "Communication Services",
+          "Consumer Discretionary",
+          "Consumer Staples",
+          "Energy",
+          "Financials",
+          "Health Care",
+          "Industrials",
+          "Information Technology",
+          "Materials",
+          "Real Estate",
+          "Utilities"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "firm_name_processed"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_unique",
+      "kwargs": {
+        "column": "keyword"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "keyword"
+      },
+      "meta": {}
+    }
+  ],
+  "meta": {
+    "BasicSuiteBuilderProfiler": {
+      "batch_kwargs": {
+        "data_asset_name": "gtrends_meta",
+        "datasource": "pandas_s3",
+        "reader_options": {
+          "encoding": "utf-8"
+        },
+        "s3": "s3a://esg-analytics/processed/search_interest_meta/part-00000-3a16f3f1-266e-4037-98c4-e8837529daf3-c000.csv"
+      },
+      "created_at": 1605791941.400934,
+      "created_by": "BasicSuiteBuilderProfiler"
+    },
+    "citations": [
+      {
+        "batch_kwargs": {
+          "data_asset_name": "gtrends_meta",
+          "datasource": "pandas_s3",
+          "reader_options": {
+            "encoding": "utf-8"
+          },
+          "s3": "s3a://esg-analytics/processed/search_interest_meta/part-00000-3a16f3f1-266e-4037-98c4-e8837529daf3-c000.csv"
+        },
+        "batch_markers": {
+          "ge_load_time": "20201119T131859.180173Z",
+          "pandas_data_fingerprint": "98d0fc13aae787db580d1d7441b764c1"
+        },
+        "batch_parameters": null,
+        "citation_date": "20201119T131901.494397Z",
+        "comment": "BasicSuiteBuilderProfiler added a citation based on the current batch."
+      }
+    ],
+    "columns": {
+      "date_construct_keyword": {
+        "description": ""
+      },
+      "date_define_topic": {
+        "description": ""
+      },
+      "date_get_firmname": {
+        "description": ""
+      },
+      "date_query_googletrends": {
+        "description": ""
+      },
+      "firm_name_processed": {
+        "description": ""
+      },
+      "firm_name_raw": {
+        "description": ""
+      },
+      "keyword": {
+        "description": ""
+      },
+      "positive": {
+        "description": ""
+      },
+      "sector": {
+        "description": ""
+      },
+      "ticker": {
+        "description": ""
+      },
+      "topic": {
+        "description": ""
+      }
+    },
+    "great_expectations_version": "0.12.9",
+    "notes": {
+      "content": [
+        "_To add additional notes, edit the <code>meta.notes.content</code> field in the appropriate Expectation json file._"
+      ],
+      "format": "markdown"
+    }
+  }
+}

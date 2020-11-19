@@ -69,7 +69,7 @@ def main(path, query_file):
 	df.loc[df_dummy_sequence.index,:] = df_dummy_sequence
 
 	# export
-	make_csv(df, '20201017-191627gtrends_preprocessed.csv', path, header=True)
+	make_csv(df, f'{query_file}_preprocessed.csv', path, header=True)
 
 if __name__ == '__main__':
 	main()

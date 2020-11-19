@@ -205,7 +205,7 @@ with DAG('GreenQuant_dag',
 	    task_id="add_steps",
 	    job_flow_id="{{ task_instance.xcom_pull(task_ids='create_emr_cluster', key='return_value') }}",
 	    aws_conn_id="aws_credentials",
-	    steps=SPARK_STEPS,
+	    steps=SPARK_STEPS
 	    )
 	    # params={ # these params are used to fill the paramterized values in SPARK_STEPS json
 	    # Note: Could use these input parameters to define all input to etl_spark

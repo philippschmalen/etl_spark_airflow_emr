@@ -20,6 +20,8 @@ dependencies:
   - jupyterlab_pygments=0.1.2=py_0
   - jupyterlab_server=1.2.0=py_0
   pip:
+    - great_expectations==0.12.9
+    - ruamel_yaml==0.15.87
     - configparser==3.5.3
     - numpy==1.19.0
     - apache-airflow==1.10.12

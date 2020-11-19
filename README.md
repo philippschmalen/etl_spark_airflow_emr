@@ -51,7 +51,7 @@ Project Organization
 * set S3 configuration like bucket name and region in `\~\src\data\s3_config.cfg`
 
 
-### Setup & Run Airflow
+## Setup & Run Airflow
 
 **Airflow on Windows 10**: Airflow runs solely on Linux which requires additional steps to make it work where you can choose from two options. Either you install windows subsystem for Linux (WSL) [](https://ubuntu.com/wsl), configure it and call `airflow ...` commands from wsl or you rely on Docker as explained in [here](https://www.startdataengineering.com/post/how-to-submit-spark-jobs-to-emr-cluster-from-airflow/).
 
@@ -126,6 +126,17 @@ You can access the raw data directly on [Google Drive](https://drive.google.com/
 The number prefix from 0 to 3 indicates what stages the data is in. `0[...]` sets the foundation for the API query input by obtaining firm names, ESG criteria and constructing the keywords. `1[...]` runs API queries, whereas `2[...]` preprocesses and `3[...]` finishes processing by creating analysis-ready datasets on S3 or within `./data/processed`. 
 
 *Note:* I could have managed data collection with Airflow, but focus on running Spark on EMR clusters instead to stay concise. Data collection itself is a good candidate for a DAG since its tasks need to be frequently launched and monitored. However, I benefit more from learning Spark and handling EMR cluster. Hence, I leave this improvement to future versions of the project. 
+
+## Data validation with Great Expectations
+
+I rely on [Great Expectations](https://docs.greatexpectations.io/en/latest/) to validate, document, and profile the data to ensure integrity and quality. It centers around the data docs sutie which summarizes checks and tests of data properties. Make sure to have it installed via `pip install great_expectations`. To get to the data docs suite for this project, open a cmd window and follow these steps:
+
+```bash
+# navigate to the project dir
+cd ./great_expectations/
+great_expectations
+```
+
 
 
 <!-- [TODO: What else is needed to run the project?] -->
