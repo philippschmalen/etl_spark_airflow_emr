@@ -129,18 +129,21 @@ The number prefix from 0 to 3 indicates what stages the data is in. `0[...]` set
 
 ## Data validation with Great Expectations
 
-I rely on [Great Expectations](https://docs.greatexpectations.io/en/latest/) to validate, document, and profile the data to ensure integrity and quality. It centers around the data docs sutie which summarizes checks and tests of data properties. Make sure to have it installed via `pip install great_expectations`. To get to the data docs suite for this project, open a cmd window and follow these steps:
+I rely on [Great Expectations](https://docs.greatexpectations.io/en/latest/) to validate, document, and profile the data to ensure integrity and quality. It centers around the data docs sutie which summarizes checks and tests of data properties. Make sure to have it installed via `pip install great_expectations`. To validate the data with checkpoints or get to the data docs suites for this project, open a cmd window and follow these steps:
 
 ```bash
 # navigate to the project dir
 cd ./great_expectations/
-great_expectations
+# see available suites 
+great_expectations suite list 
+# run validation checkpoints
+great_expectations checkpoint run preprocess.chk
+great_expectations checkpoint run processed.chk
+great_expectations checkpoint run processed_meta.chk
+
+# get to ge data docs 
+great_expectations suite edit esg 
 ```
-
-
-
-<!-- [TODO: What else is needed to run the project?] -->
-
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
 
