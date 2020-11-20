@@ -2,7 +2,7 @@
 
 You need to set the `AIRFLOW_HOME` directory somewhere. You can put it into an ever changing project folder or use a fixed path. Beware that Airflow generates many log or database files when running `aiflow initdb`. Instead of having overhead my project folder, I like to keep things clean. I have a fixed `AIRFLOW_HOME` directory `/c/users/philipp/airflowhome` and a bash script `deploy.sh` that updates my Airflow project files with `AIRFLOW_HOME`. Any time I make changes to a DAG or related files, I run `deploy.sh` and have everything in place in `AIRFLOW_HOME`. Airflow's scheduler makes sure to forwards the updated DAGs to the webserver.
 
-> ## TLDR;
+## TLDR;
 > Create a bash script `deploy.sh` to copy files from a project folder like `./projects/yourprojectname/src/airflow/` to Airflow home like `/c/users/yourname/airflowhome`. Unsure about where the Airflow home directory is? Open a cmd window, activate wsl by typing `wsl` and run `env | grep AIFLOW_HOME`. 
 
 ## Connect project folder to AIRFLOW_HOME
@@ -70,4 +70,4 @@ airlfow list_tasks dag_id
 airflow test dag_id task_id 11/20/2020
 ``` 
 
-Refer to Airflow's [Command Line Interface Reference](https://airflow.apache.org/docs/stable/cli-ref#test). `
+Refer to Airflow's [Command Line Interface Reference](https://airflow.apache.org/docs/stable/cli-ref#test).
